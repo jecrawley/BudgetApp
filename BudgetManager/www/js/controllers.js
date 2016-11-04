@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http, login) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -10,7 +10,7 @@ angular.module('starter.controllers', [])
   //});
 
   // Form data for the login modal
-  $scope.loginData = {};
+  $scope.loginData = {id: 0};
 
   // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/login.html', {
@@ -31,17 +31,43 @@ angular.module('starter.controllers', [])
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
+      console.log('Doing login', $scope.loginData);
       $scope.closeLogin();
-    }, 1000);
+  };
+
+  $scope.authenticateUser = function () {
+
+      console.log($scope.loginData.username);
+
+      $http ({
+          method: 'POST',
+          url: 'http://localhost:8080/authenticate',
+          data: $scope.loginData
+      })
+      .then (function (response) {
+          console.log(response.data);
+      })
+      $scope.closeLogin();
+  };
+
+  $scope.createUser = function() {
+
+      $http ({
+          method: 'POST',
+          url: 'http://localhost:8080/createuser',
+          data: $scope.loginData
+      })
+      .then (function (response) {
+          if (response.data.message === "Success!") {
+              login.set($scope.loginData.username);
+          }
+          console.log(response.data);
+      })
+      $scope.closeLogin();
   };
 })
 
-.controller('BudgetsCtrl', function($scope, $http) {
+.controller('BudgetsCtrl', function($scope, $http, login) {
   $scope.budgets = [
     { title: 'Housing', id: 'housing' },
     { title: 'Electricity', id: 'electricity' },
@@ -58,14 +84,14 @@ angular.module('starter.controllers', [])
 
   $http({
     method: 'GET',
-    url:'http://localhost:8080/allbudgets'
+    url:'http://localhost:8080/budgets/search/findByUsername?username=' + login.getUsername()
   })
   .then( function (response){
       $scope.value = response.data[0];
   })
 })
 
-.controller('BudgetCtrl', function($scope, $stateParams, $http) {
+.controller('BudgetCtrl', function($scope, $stateParams, $http, login) {
   $scope.id = $stateParams.budgetId;
 
   $scope.updateBudget = function (id) {
