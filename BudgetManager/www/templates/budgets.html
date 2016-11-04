@@ -1,6 +1,9 @@
-<ion-view view-title="Budget Categories">
+<ion-view cache-view="false" view-title="Budget Categories">
   <ion-content>
     <ion-list>
+        <div class="login-controls">
+            <h2>Welcome, {{loggedIn}}</h2>
+        </div>
       <ion-item ng-repeat="budget in budgets" href="#/app/budgets/{{budget.title}}">
         <div class="budget_category">
           {{budget.title}} :

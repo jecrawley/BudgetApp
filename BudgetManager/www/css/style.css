@@ -1,14 +1,15 @@
 /* Empty. Add your own CSS if you like */
 .payments {
-  width: 16em;
+  width: 8em;
   height: 3em;
-  display: inline-block;
+  text-align: left;
+  /*display: inline-block;*/
 }
 
 .payform {
   height: 3em;
-  width: 20em;
-  display: inline-block;
+  width: 15em;
+  /*display: inline-block;*/
 }
 
 .center {
@@ -26,7 +27,11 @@ progress {
   -webkit-appearance: none;
 }
 
-.asdf {
+.login-controls {
     padding: 20px;
+    text-align: center;
+}
+
+ion-label {
     text-align: center;
 }
