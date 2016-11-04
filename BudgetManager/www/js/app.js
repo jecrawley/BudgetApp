@@ -35,8 +35,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   .state('home', {
   url: '/home',
   abstract: true,
-  templateUrl: 'templates/home.html',
-  controller: 'AppCtrl'
+  templateUrl: 'templates/home.html'
+  //controller: 'AppCtrl'
 })
 
     .state('app.budgets', {

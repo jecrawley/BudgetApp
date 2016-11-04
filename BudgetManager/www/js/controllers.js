@@ -1,40 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http, login) {
-
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  // // Form data for the login modal
-  //
-  //
-  // // Create the login modal that we will use later
-  // $ionicModal.fromTemplateUrl('templates/login.html', {
-  //   scope: $scope
-  // }).then(function(modal) {
-  //   $scope.modal = modal;
-  // });
-  //
-  // // Triggered in the login modal to close it
-  // $scope.closeLogin = function() {
-  //   $scope.modal.hide();
-  // };
-  //
-  // // Open the login modal
-  // $scope.login = function() {
-  //   $scope.modal.show();
-  // };
-  //
-  // // Perform the login action when the user submits the login form
-  // $scope.doLogin = function() {
-  //     console.log('Doing login', $scope.loginData);
-  //     $scope.closeLogin();
-  // };
-
+.controller('AppCtrl', function() {
 
 })
 
@@ -44,22 +10,26 @@ angular.module('starter.controllers', [])
 
     $scope.authenticateUser = function () {
 
-        $http ({
-            method: 'POST',
-            url: 'http://localhost:8080/authenticate',
-            data: $scope.loginData
-        })
-        .then (function (response) {
-            if (response.data.message === 'Success!') {
-                login.set($scope.loginData.username);
+        if ($scope.loginData.username !== '' && $scope.loginData.password !== '') {
+
+            $http ({
+                method: 'POST',
+                url: 'http://localhost:8080/authenticate',
+                data: $scope.loginData
+            })
+            .then (function (response) {
+                if (response.data.message === 'Success!') {
+                    login.set($scope.loginData.username);
+                    $scope.error = '';
+                    $state.go('app.budgets');
+                } else {
+                    $scope.error = 'Username or Password is incorrect.'
+                }
                 $scope.loginData.username = '';
                 $scope.loginData.password = '';
-                $state.go('app.budgets');
-            } else {
-                $scope.error = 'Username or Password is incorrect.'
-            }
-            console.log(response.data);
-        })
+                console.log(response.data);
+            })
+        };
 
     };
 
@@ -92,31 +62,34 @@ angular.module('starter.controllers', [])
             entertainmentBudgetSpent: 0
         }
 
-        $http ({
-            method: 'POST',
-            url: 'http://localhost:8080/createuser',
-            data: $scope.loginData
-        })
-        .then (function (response) {
-            if (response.data.message === 'Success!') {
-                login.set($scope.loginData.username);
-                $http ({
-                    method: 'POST',
-                    url: 'http://localhost:8080/createbudget',
-                    data: budget
-                })
-                .then (function (response) {
-                    console.log(response.data);
-                })
+        if ($scope.loginData.username !== '' && $scope.loginData.password !== '') {
+
+            $http ({
+                method: 'POST',
+                url: 'http://localhost:8080/createuser',
+                data: $scope.loginData
+            })
+            .then (function (response) {
+                if (response.data.message === 'Success!') {
+                    login.set($scope.loginData.username);
+                    $http ({
+                        method: 'POST',
+                        url: 'http://localhost:8080/createbudget',
+                        data: budget
+                    })
+                    .then (function (response) {
+                        console.log(response.data);
+                    })
+                    $scope.error = '';
+                    $state.go('app.budgets');
+                } else {
+                    $scope.error = 'Username is already taken.'
+                }
                 $scope.loginData.username = '';
                 $scope.loginData.password = '';
-                $state.go('app.budgets');
-            } else {
-                $scope.error = 'Username is already taken.'
-            }
-            console.log(response.data);
-        })
-
+                console.log(response.data);
+            })
+        }
     };
 })
 
