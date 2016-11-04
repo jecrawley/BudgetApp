@@ -25,3 +25,8 @@
 progress {
   -webkit-appearance: none;
 }
+
+.asdf {
+    padding: 20px;
+    text-align: center;
+}

@@ -37,20 +37,51 @@ angular.module('starter.controllers', [])
 
   $scope.authenticateUser = function () {
 
-      console.log($scope.loginData.username);
-
       $http ({
           method: 'POST',
           url: 'http://localhost:8080/authenticate',
           data: $scope.loginData
       })
       .then (function (response) {
+          if (response.data.message === "Success!") {
+              login.set($scope.loginData.username);
+              $scope.closeLogin();
+          } else {
+              $scope.error = "Username or Password is incorrect."
+          }
           console.log(response.data);
       })
-      $scope.closeLogin();
+
   };
 
   $scope.createUser = function() {
+
+      var budget = {
+          id: 0,
+          username: $scope.loginData.username,
+          housing: 100,
+          housingBudgetSpent: 0,
+          electricity: 100,
+          electricityBudgetSpent: 0,
+          water: 100,
+          waterBudgetSpent: 0,
+          phone: 100,
+          phoneBudgetSpent: 0,
+          heating: 100,
+          heatingBudgetSpent: 0,
+          groceries: 100,
+          groceriesBudgetSpent: 0,
+          restaurants: 100,
+          restaurantsBudgetSpent: 0,
+          clothing: 100,
+          clothingBudgetSpent: 0,
+          beauty: 100,
+          beautyBudgetSpent: 0,
+          automobile: 100,
+          automobileBudgetSpent: 0,
+          entertainment: 100,
+          entertainmentBudgetSpent: 0
+      }
 
       $http ({
           method: 'POST',
@@ -60,10 +91,21 @@ angular.module('starter.controllers', [])
       .then (function (response) {
           if (response.data.message === "Success!") {
               login.set($scope.loginData.username);
+              $http ({
+                  method: 'POST',
+                  url: 'http://localhost:8080/createbudget',
+                  data: budget
+              })
+              .then (function (response) {
+                  console.log(response.data);
+              })
+              $scope.closeLogin();
+          } else {
+              $scope.error = "Username is already taken."
           }
           console.log(response.data);
       })
-      $scope.closeLogin();
+
   };
 })
 
@@ -82,12 +124,15 @@ angular.module('starter.controllers', [])
     { title: 'Entertainment', id: 'entertainment' }
   ];
 
+  console.log(login.getUsername());
+
   $http({
     method: 'GET',
-    url:'http://localhost:8080/budgets/search/findByUsername?username=' + login.getUsername()
+    url:'http://localhost:8080/budgets/' + login.getUsername()
   })
   .then( function (response){
-      $scope.value = response.data[0];
+      login.set
+      $scope.value = response.data;
   })
 })
 
@@ -100,7 +145,7 @@ angular.module('starter.controllers', [])
     var newBudget = document.getElementById("newBudget");
 
     var payment = {
-      id: 1,
+      id: login.getUsername(),
       amount: newBudget.value
     }
 
@@ -116,7 +161,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('PaymentsCtrl', function($scope, $stateParams, $http, $ionicPopup) {
+.controller('PaymentsCtrl', function($scope, $stateParams, $http, $ionicPopup, login) {
 
   $scope.bills = [
     "Phone",
@@ -157,7 +202,7 @@ angular.module('starter.controllers', [])
     }
 
     var payment = {
-      "id": 1,
+      "username": login.getUsername(),
       "amount": amount
     }
 
